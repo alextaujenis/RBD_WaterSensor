@@ -19,7 +19,7 @@ Download and install this Water Sensor Library along with these dependencies:
 0. Pour out the water, then compile and load the calibrated sketch back into the Arduino
 0. Your water level is calibrated and ready to use
 
-##[example.ino](https://github.com/alextaujenis/WaterSensor/blob/master/example/example.ino)
+**[example.ino](https://github.com/alextaujenis/WaterSensor/blob/master/example/example.ino) <- comments included**
 
     #include <WaterSensor.h>
     #include <Capacitance.h>
