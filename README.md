@@ -63,7 +63,7 @@ Download and install this Water Sensor Library along with these dependencies:
 
 **Warning(s):**
 
-* Consumer electronics will alter with the readings if they are high-powered or too close to the sensor
+* Consumer electronics will alter the readings if they are too close to the sensor or very high-powered
 * The sensor will be less accurate when you are near it, so stay away during calibration
 * You should calibrate this sensor when the container is sitting exactly where it will be used
 * Moving the sensor after calibration may throw off the readings because of differences in ambient electrical energy
