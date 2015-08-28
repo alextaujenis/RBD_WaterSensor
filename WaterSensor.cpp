@@ -22,7 +22,7 @@ void WaterSensor::setRefreshRate(int hertz) {
   _refresh_hertz = hertz;
   _real_time     = false;
 
-  if(_refresh_hertz != 0) {
+  if(_shouldBeRunning()) {
     _refresh_timer.setTimeout(_refreshRateDelay());
     _cap_sensor.start();
   }
@@ -34,22 +34,24 @@ void WaterSensor::startRealTime() {
 }
 
 void WaterSensor::update() {
-  _cap_sensor.update();
+  if(_shouldBeRunning()) {
+    _cap_sensor.update();
 
-  if(_isRealTime()) {
-    // go full speed
-    if(_cap_sensor.isFinished()) {
-      _raw_value = _cap_sensor.getValue();
-      _cap_sensor.start();
-    }
-  }
-  else {
-    // limit the number of times / second
-    if(_refresh_timer.isExpired()) {
+    if(_isRealTime()) {
+      // go full speed
       if(_cap_sensor.isFinished()) {
         _raw_value = _cap_sensor.getValue();
         _cap_sensor.start();
-        _refresh_timer.restart();
+      }
+    }
+    else {
+      // limit the number of times / second
+      if(_refresh_timer.isExpired()) {
+        if(_cap_sensor.isFinished()) {
+          _raw_value = _cap_sensor.getValue();
+          _cap_sensor.start();
+          _refresh_timer.restart();
+        }
       }
     }
   }
@@ -77,11 +79,15 @@ int WaterSensor::getActiveLevel() {
 
 // private
 
-int WaterSensor::_refreshRateDelay() {
-  // number of ms in a second / interval
-  int(1000 / float(_refresh_hertz));
+bool WaterSensor::_shouldBeRunning() {
+  return _refresh_hertz != 0 || _isRealTime();
 }
 
 bool WaterSensor::_isRealTime() {
   return _real_time;
+}
+
+int WaterSensor::_refreshRateDelay() {
+  // number of ms in a second / interval
+  return 1000 / _refresh_hertz;
 }
