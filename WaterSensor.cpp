@@ -14,7 +14,6 @@ WaterSensor::WaterSensor(int send_pin, int receive_pin, int level_count)
 }
 
 void WaterSensor::setAccuracy(int value) {
-  // pass-through to the capacitance library
   _cap_sensor.setSampleSize(value);
 }
 
@@ -66,7 +65,6 @@ void WaterSensor::setLevel(int index, int raw_value) {
 }
 
 void WaterSensor::setMaxLevel(int raw_value) {
-  // pass-through to the threshold library
   _threshold.setMaxLevel(raw_value);
 }
 
