@@ -80,7 +80,7 @@ int WaterSensor::getActiveLevel() {
 // private
 
 bool WaterSensor::_shouldBeRunning() {
-  return _refresh_hertz != 0 || _isRealTime();
+  return _isRealTime() || _refresh_hertz != 0;
 }
 
 bool WaterSensor::_isRealTime() {
