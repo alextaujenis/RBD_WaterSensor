@@ -1,5 +1,5 @@
 #Arduino Water Sensor Library
-Measure and calibrate capacitance-based water level sensors in real-time.
+Measure and calibrate capacitance water level sensors in real-time.
 
 This library requires that you don't use delay() or interrupts to manage program flow. Check out this [Arduino Timer Library](https://github.com/alextaujenis/Timer) if you are managing millis() by hand.
 
