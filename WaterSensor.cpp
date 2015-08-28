@@ -62,9 +62,7 @@ int WaterSensor::getRawValue() {
 }
 
 void WaterSensor::setLevel(int index, int raw_value) {
-  if(index > 0 && index <= _level_count) {
-    _threshold.setLevel(index, raw_value);
-  }
+  _threshold.setLevel(index, raw_value);
 }
 
 void WaterSensor::setMaxLevel(int raw_value) {
