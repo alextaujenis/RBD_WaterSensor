@@ -19,7 +19,7 @@ Download and install this Water Sensor Library along with these dependencies:
 0. Pour out the water, then compile and load the calibrated sketch back into the Arduino
 0. Your water level is calibrated and ready to use
 
-**[example.ino](https://github.com/alextaujenis/WaterSensor/blob/master/example/example.ino) <- comments included**
+**[example.ino](https://github.com/alextaujenis/WaterSensor/blob/master/example/example.ino) <- with comments**
 
     #include <WaterSensor.h>
     #include <Capacitance.h>
@@ -92,7 +92,7 @@ Provide an integer of how many readings to average before reporting a value. Inc
     water_sensor.setAccuracy(1000);
 
 ##setRefreshRate(hertz)
-Set the maximum number of times the sensor should update per second. This is meant to be used to limit the number of readings taken per second. Calling this method will kick the sensor out of real-time readings if you have previously called [startRealTime()](#startrealtime). Set this value to 0 to completely stop the sensor from taking readings. If you make this faster than the sensor can read values (because of increasing accuracy): the library will naturally settle at taking readings in real-time.
+Provide an integer from 0 to 1000 to set the maximum number of times the sensor should update per second. This is meant to be used to limit the number of readings taken per second. Calling this method will kick the sensor out of real-time readings if you have previously called [startRealTime()](#startrealtime). Set this value to 0 to completely stop the sensor from taking readings. If you make this faster than the sensor can read values (because of a high accuracy value): the library will naturally settle at taking readings in real-time.
 
     water_sensor.setRefreshRate(2); // about every 500ms
 
