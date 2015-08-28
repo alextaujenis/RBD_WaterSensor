@@ -27,7 +27,6 @@ class WaterSensor {
     int _refresh_hertz;       // max number of readings / second
     bool _real_time;          // sensor collects at max speed
     int _raw_value;           // holds the raw capacitance value
-    int _refreshRateDelay();  // calculate ms timeout based upon hertz
     bool _isRealTime();       // if this is reading at max speed
     bool _shouldBeRunning();  // if the refresh rate is above zero or in real-time
     Capacitance _cap_sensor;  // capacitance library helper object

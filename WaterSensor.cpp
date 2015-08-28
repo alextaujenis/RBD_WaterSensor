@@ -23,7 +23,7 @@ void WaterSensor::setRefreshRate(int hertz) {
   _real_time     = false;
 
   if(_shouldBeRunning()) {
-    _refresh_timer.setTimeout(_refreshRateDelay());
+    _refresh_timer.setHertz(_refresh_hertz);
     _cap_sensor.start();
   }
 }
@@ -85,9 +85,4 @@ bool WaterSensor::_shouldBeRunning() {
 
 bool WaterSensor::_isRealTime() {
   return _real_time;
-}
-
-int WaterSensor::_refreshRateDelay() {
-  // number of ms in a second / interval
-  return 1000 / _refresh_hertz;
 }
