@@ -102,7 +102,7 @@ Start collecting readings as fast as possible and remove the [setRefreshRate()](
     water_sensor.startRealTime()
 
 ##update()
-Keep the water sensor reading in real-time. This must be called continuously from within loop() to get water level readings.
+Keep this library moving and up to date. This must be called continuously from within loop() to get water level readings.
 
     water_sensor.update();
 
