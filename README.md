@@ -6,9 +6,9 @@ This library requires that you don't use delay() or interrupts to manage program
 ##Installation
 Download and install this Water Sensor Library along with these dependencies:
 
-* [Arduino Capacitance Library](https://github.com/alextaujenis/Capacitance)
-* [Arduino Threshold Library](https://github.com/alextaujenis/Threshold)
-* [Arduino Timer Library](https://github.com/alextaujenis/Timer)
+* [Arduino Capacitance Library](https://github.com/alextaujenis/RBD_Capacitance)
+* [Arduino Threshold Library](https://github.com/alextaujenis/RBD_Threshold)
+* [Arduino Timer Library](https://github.com/alextaujenis/RBD_Timer)
 
 ##Example Setup
 0. Bridge a 10Meg Ohm resistor across the send (tx 1) and receive (rx 0) pins
@@ -19,12 +19,12 @@ Download and install this Water Sensor Library along with these dependencies:
 0. Pour out the water, then compile and load the calibrated sketch back into the Arduino
 0. Your water level is calibrated and ready to use
 
-**[example.ino](https://github.com/alextaujenis/WaterSensor/blob/master/example/example.ino) <- with comments**
+**[example.ino](https://github.com/alextaujenis/RBD_WaterSensor/blob/master/example/example.ino) <- with comments**
 
-    #include <WaterSensor.h>
-    #include <Capacitance.h>
-    #include <Threshold.h>
-    #include <Timer.h>
+    #include <RBD_WaterSensor.h>
+    #include <RBD_Capacitance.h>
+    #include <RBD_Threshold.h>
+    #include <RBD_Timer.h>
 
     #define BAUD        115200
     #define SEND_PIN    1
@@ -33,7 +33,7 @@ Download and install this Water Sensor Library along with these dependencies:
 
     int past_value  = 0;
 
-    WaterSensor water_sensor(SEND_PIN, RECEIVE_PIN, LEVEL_COUNT);
+    RBD::WaterSensor water_sensor(SEND_PIN, RECEIVE_PIN, LEVEL_COUNT);
 
     void setup() {
       Serial.begin(BAUD);
@@ -84,7 +84,7 @@ Download and install this Water Sensor Library along with these dependencies:
 ##constructor(send\_pin, receive\_pin, level\_count)
 Pass in integers for the send and receive pins to create a new instance of this class, along with an integer for the total number of levels your water sensor will detect. Example: if you want to detect low, medium, and high levels then the level\_count should be 3.
 
-    WaterSensor water_sensor(1, 0, 3);
+    RBD::WaterSensor water_sensor(1, 0, 3);
 
 ##setAccuracy(value)
 Provide an integer of how many readings to average before reporting a value. Increasing the value will increase accuracy and take longer to compute. Decreasing the value will lower accuracy and take a shorter time to compute. This can possibly affect the actual refresh rate to make it take slower readings. Don't worry, you can be as accurate as you'd like because this is done in a non-blocking manner and it won't affect your main loop() performance.

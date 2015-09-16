@@ -2,10 +2,10 @@
 // Copyright 2015 Alex Taujenis
 // MIT License
 
-#include <WaterSensor.h>
-#include <Capacitance.h>
-#include <Threshold.h>
-#include <Timer.h>
+#include <RBD_WaterSensor.h>
+#include <RBD_Capacitance.h>
+#include <RBD_Threshold.h>
+#include <RBD_Timer.h>
 
 #define BAUD        115200
 #define SEND_PIN    1
@@ -17,7 +17,7 @@
 int past_value  = 0;
 
 // you can define many real-time sensors and they will all play nice
-WaterSensor water_sensor(SEND_PIN, RECEIVE_PIN, LEVEL_COUNT);
+RBD::WaterSensor water_sensor(SEND_PIN, RECEIVE_PIN, LEVEL_COUNT);
 // WaterSensor water_sensor2(5, 6, 10);
 
 void setup() {
