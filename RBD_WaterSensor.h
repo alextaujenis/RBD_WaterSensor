@@ -17,20 +17,25 @@ namespace RBD {
       void setAccuracy(int value);
       void setLevel(int index, int raw_value);
       void setMaxLevel(int raw_value);
+      void setModifier(int value);
+      void resetModifier();
+      int getValue();
       int getRawValue();
       int getActiveLevel();
       bool isActiveLevel(int value);
+      bool onValueChange();
       bool onRawValueChange();
       bool onActiveLevelChange();
     private:
       int _level_count;
       int _raw_value;
-      int _temp_raw_value;
-      int _prev_raw_value1;
-      int _prev_raw_value2;
+      int _temp_value;
+      int _prev_value1;
+      int _prev_value2;
       int _saved_level;
       int _prev_level;
       int _temp_level;
+      int _raw_value_modifier;
       bool _raw_value_changed = false;
       Capacitance _cap_sensor;
       Threshold _threshold;

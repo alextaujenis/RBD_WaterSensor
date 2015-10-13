@@ -22,8 +22,8 @@ namespace RBD {
       _raw_value = _cap_sensor.getValue();
 
       // set the flag if the value has changed
-      if(_prev_raw_value1 != _raw_value) {
-        _prev_raw_value1 = _raw_value;
+      if(_prev_value1 != _raw_value) {
+        _prev_value1 = _raw_value;
         _raw_value_changed = true;
       }
 
@@ -49,12 +49,12 @@ namespace RBD {
 
   int WaterSensor::getActiveLevel() {
     // freeze the raw value for comparison
-    _temp_raw_value = getRawValue();
+    _temp_value = getValue();
 
     // memozie the threshold for performance reasons
-    if(_prev_raw_value2 != _temp_raw_value) {
-      _prev_raw_value2 = _temp_raw_value;
-      _saved_level = _threshold.computeLevel(_temp_raw_value);
+    if(_prev_value2 != _temp_value) {
+      _prev_value2 = _temp_value;
+      _saved_level = _threshold.computeLevel(_temp_value);
     }
 
     // return the current level
@@ -63,6 +63,10 @@ namespace RBD {
 
   bool WaterSensor::isActiveLevel(int value) {
     return getActiveLevel() == value;
+  }
+
+  bool WaterSensor::onValueChange() {
+    return onRawValueChange();
   }
 
   bool WaterSensor::onRawValueChange() {
@@ -83,5 +87,17 @@ namespace RBD {
       return true;
     }
     return false;
+  }
+
+  void WaterSensor::setModifier(int value) {
+    _raw_value_modifier = value;
+  }
+
+  void WaterSensor::resetModifier() {
+    setModifier(0);
+  }
+
+  int WaterSensor::getValue() {
+    return _raw_value + _raw_value_modifier;
   }
 }
