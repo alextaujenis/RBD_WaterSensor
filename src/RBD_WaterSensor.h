@@ -1,4 +1,5 @@
-// Arduino RBD Water Sensor Library - Measure and calibrate capacitance-based water level sensors
+// Arduino Water Sensor Library v1.0.0 - Measure and calibrate capacitance water sensors.
+// https://github.com/alextaujenis/RBD_WaterSensor
 // Copyright 2015 Alex Taujenis
 // MIT License
 
@@ -6,8 +7,8 @@
 #define RBD_WATER_SENSOR
 
 #include <Arduino.h>
-#include <RBD_Capacitance.h>
-#include <RBD_Threshold.h>
+#include <RBD_Capacitance.h> // https://github.com/alextaujenis/RBD_Capacitance
+#include <RBD_Threshold.h>   // https://github.com/alextaujenis/RBD_Threshold
 
 namespace RBD {
   class WaterSensor {

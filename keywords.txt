@@ -1,0 +1,14 @@
+WaterSensor	KEYWORD1
+update	KEYWORD2
+setSampleSize	KEYWORD2
+setLevel	KEYWORD2
+setMaxLevel	KEYWORD2
+setModifier	KEYWORD2
+resetModifier	KEYWORD2
+getValue	KEYWORD2
+getRawValue	KEYWORD2
+getActiveLevel	KEYWORD2
+isActiveLevel	KEYWORD2
+onValueChange	KEYWORD2
+onRawValueChange	KEYWORD2
+onActiveLevelChange	KEYWORD2

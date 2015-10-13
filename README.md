@@ -1,14 +1,13 @@
 #Arduino Water Sensor Library
-Measure and calibrate capacitance water level sensors in real-time.
+Measure and calibrate capacitance sensors to detect change in water levels from the outside of a plastic container. The example below uses a piece of aluminum foil, but you can attach the wire to anything conductive and calibrate the sensor accordingly.
 
-This library requires that you don't use delay() or interrupts to manage program flow. Check out this [Arduino Timer Library](https://github.com/alextaujenis/Timer) if you are managing millis() by hand.
+This library measures relative capacitance so it is prone to interference. You can temporarily adjust the entire scale and then reset it when the capacitance disruption has stopped by using [setModifier()](#setmodifiervalue) and [resetModifier()](#resetmodifier). Look at the [Capacitance Library](https://github.com/alextaujenis/RBD_Capacitance) if you would like to know more about how capacitance is calculated.
 
 ##Installation
 Download and install this Water Sensor Library along with these dependencies:
 
 * [Arduino Capacitance Library](https://github.com/alextaujenis/RBD_Capacitance)
 * [Arduino Threshold Library](https://github.com/alextaujenis/RBD_Threshold)
-* [Arduino Timer Library](https://github.com/alextaujenis/RBD_Timer)
 
 ##Example Setup
 0. Bridge a 10Meg Ohm resistor across the send (tx 1) and receive (rx 0) pins
@@ -19,26 +18,16 @@ Download and install this Water Sensor Library along with these dependencies:
 0. Pour out the water, then compile and load the calibrated sketch back into the Arduino
 0. Your water level is calibrated and ready to use
 
-**[example.ino](https://github.com/alextaujenis/RBD_WaterSensor/blob/master/example/example.ino) <- with comments**
+**Example Sketch:**
 
-    #include <RBD_WaterSensor.h>
     #include <RBD_Capacitance.h>
     #include <RBD_Threshold.h>
-    #include <RBD_Timer.h>
+    #include <RBD_WaterSensor.h>
 
-    #define BAUD        115200
-    #define SEND_PIN    1
-    #define RECEIVE_PIN 0
-    #define LEVEL_COUNT 3
-
-    int past_value  = 0;
-
-    RBD::WaterSensor water_sensor(SEND_PIN, RECEIVE_PIN, LEVEL_COUNT);
+    RBD::WaterSensor water_sensor(1, 0, 3); // send, receive, level count
 
     void setup() {
-      Serial.begin(BAUD);
-      water_sensor.setAccuracy(1000);
-      water_sensor.setRefreshRate(2);
+      Serial.begin(115200);
       water_sensor.setLevel(1, 120);
       water_sensor.setLevel(2, 154);
       water_sensor.setLevel(3, 187);
@@ -48,80 +37,162 @@ Download and install this Water Sensor Library along with these dependencies:
     void loop() {
       water_sensor.update();
 
-      if(water_sensor.getRawValue() != past_value) {
-        printValues(water_sensor.getActiveLevel(), water_sensor.getRawValue());
-        past_value = water_sensor.getRawValue();
+      if(water_sensor.onRawValueChange()) {
+        Serial.print("Active Level: ");
+        Serial.print(water_sensor.getActiveLevel());
+        Serial.print("  ---  ");
+        Serial.print("Raw Value: ");
+        Serial.println(water_sensor.getRawValue());
       }
     }
-
-    void printValues(int active_level, int raw_value) {
-      Serial.print("ACTIVE LEVEL: ");
-      Serial.print(active_level);
-      Serial.print("  RAW VALUE: ");
-      Serial.println(raw_value);
-    }
-
-**Warning(s):**
-
-* Consumer electronics will alter the readings if they are too close to the sensor or very high-powered
-* The sensor will be less accurate when you are near it, so stay away during calibration
-* You should calibrate this sensor when the container is sitting exactly where it will be used
-* Moving the sensor after calibration may throw off the readings because of differences in ambient electrical energy
 
 #Documentation
 ##Public Methods
 
 * [constructor(send\_pin, receive\_pin, level\_count)](#constructorsend_pin-receive_pin-level_count)
-* [setAccuracy(value)](#setaccuracyvalue)
-* [setRefreshRate(hertz)](#setrefreshratehertz)
-* [startRealTime()](#startrealtime)
-* [update()](#update)
-* [getRawValue()](#getrawvalue)
+<hr />
+* [setSampleSize(value)](#setsamplesizevalue)
 * [setLevel(index, raw\_value)](#setlevelindex-raw_value)
 * [setMaxLevel(raw\_value)](#setmaxlevelraw_value)
+* [setModifier(value)](#setmodifiervalue)
+* [resetModifier()](#resetmodifier)
+<hr />
+* [update()](#update)
+* [getValue()](#getvalue)
+* [getRawValue()](#getrawvalue)
 * [getActiveLevel()](#getactivelevel)
+* [isActiveLevel(value)](#isactivelevelvalue)
+<hr />
+* [onValueChange()](#onvaluechange)
+* [onRawValueChange()](#onrawvaluechange)
+* [onActiveLevelChange()](#onactivelevelchange)
 
 ##constructor(send\_pin, receive\_pin, level\_count)
-Pass in integers for the send and receive pins to create a new instance of this class, along with an integer for the total number of levels your water sensor will detect. Example: if you want to detect low, medium, and high levels then the level\_count should be 3.
+Pass in integers for the send and receive pins to create a new instance of this class, along with an integer for the total number of levels the water sensor will detect. Example: if you want to detect low, medium, and high levels then level\_count should equal 3.
 
-    RBD::WaterSensor water_sensor(1, 0, 3);
+    RBD::WaterSensor water_sensor(1, 0, 3); // send, receive, level count
 
-##setAccuracy(value)
-Provide an integer of how many readings to average before reporting a value. Increasing the value will increase accuracy and take longer to compute. Decreasing the value will lower accuracy and take a shorter time to compute. This can possibly affect the actual refresh rate to make it take slower readings. Don't worry, you can be as accurate as you'd like because this is done in a non-blocking manner and it won't affect your main loop() performance.
+    void setup() {
+      ...
+    }
 
-    water_sensor.setAccuracy(1000);
+##setSampleSize(value)
+Pass in an integer to change the number of readings taken to calculate the moving average [getRawValue()](#getrawvalue). This can be called inside of setup() or also safely at runtime inside of loop().
 
-##setRefreshRate(hertz)
-Provide an integer from 0 to 1000 to set the maximum number of times the sensor should update per second. This is meant to be used to limit the number of readings taken per second. Calling this method will kick the sensor out of real-time readings if you have previously called [startRealTime()](#startrealtime). Set this value to 0 to completely stop the sensor from taking readings. If you make this faster than the sensor can read values (because of a high accuracy value): the library will naturally settle at taking readings in real-time.
+* Decrease Variation in readings by making this number larger: 5000
+* Increase Variation in readings by making this number smaller: 100
+* Default Value: 1000
 
-    water_sensor.setRefreshRate(2); // about every 500ms
+Example:
 
-##startRealTime()
-Start collecting readings as fast as possible and remove the [setRefreshRate()](#setrefreshratehertz) limit.
-
-    water_sensor.startRealTime()
-
-##update()
-Keep this library moving and up to date. This must be called continuously from within loop() to get water level readings.
-
-    water_sensor.update();
-
-##getRawValue()
-Get the raw sensor value in order to calibrate each level with [setLevel()](#setlevelindex-raw_value).
-
-    water_sensor.getRawValue()
+    void setup() {
+      water_sensor.setSampleSize(250);
+    }
 
 ##setLevel(index, raw\_value)
-Add a value for the lower bounds of each level.
+Provide an integer for the level index and a raw value from [getRawValue()](#getrawvalue). The level index starts at one (it is not zero-based). You must also call [setMaxLevel()](#setmaxlevelraw_value) at the end to set an upper bounds of the last level.
 
-    water_sensor.setLevel(1, 0);  // 0 - 33
-    water_sensor.setLevel(2, 34); // 34 - 66
-    water_sensor.setLevel(3, 67); // 67 - max
+    void setup() {
+      water_sensor.setLevel(1, 120);
+      water_sensor.setLevel(2, 154);
+      water_sensor.setLevel(3, 187);
+    }
 
 ##setMaxLevel(raw\_value)
-Add a value for the upper bounds of the last level.
+Provide an integer from [getRawValue()](#getrawvalue) to set the upper-bounds threshold of the last level.
 
-    water_sensor.setMaxLevel(100);
+    void setup() {
+      water_sensor.setMaxLevel(220);
+    }
+
+##setModifier(value)
+Provide a positive or negative integer to temporarily adjust the water sensor threshold scale. The default value is 0.
+
+For example; if you have calibrated the scale and turn on a motor near the sensor: all readings will need to be adjusted for the increased capacitance from the motor.
+
+* If a running motor increases the difference in water sensor readings by a [getRawValue()](#getrawvalue) of +200
+* Call [setModifier(-200)](#setmodifiervalue) on the water sensor when the motor turns on
+* All of the calibrated water sensor thresholds will adjust -200
+* The water sensor [getActiveLevel()](#getactivelevel) and [getValue()](#getvalue) will account for motor interference
+* Call [resetModifier()](#resetmodifier) on the water sensor when the motor shuts off
+
+Example:
+
+    void loop() {
+      if(...) { // adjust when motor is on
+        water_sensor.setModifier(-200);
+      }
+      else {
+        water_sensor.resetModifier();
+      }
+
+      water_sensor.update();
+
+      // still works as expected with interference
+      if(water_sensor.onActiveLevelChange()) {
+        ...
+      }
+    }
+
+##resetModifier()
+Changes the [setModifier()](#setmodifiervalue) back to 0 and resets calibration of the water sensor threshold scale.
+
+For example; if you have calibrated the scale and turn on a motor near the sensor: all readings will need to be adjusted for the increased capacitance from the motor.
+
+* If a running motor increases the difference in water sensor readings by a [getRawValue()](#getrawvalue) of +200
+* Call [setModifier(-200)](#setmodifiervalue) on the water sensor when the motor turns on
+* All of the calibrated water sensor thresholds will adjust -200
+* The water sensor [getActiveLevel()](#getactivelevel) and [getValue()](#getvalue) will account for motor interference
+* Call [resetModifier()](#resetmodifier) on the water sensor when the motor shuts off
+
+Example:
+
+    void loop() {
+      if(...) {
+        water_sensor.setModifier(-200);
+      }
+      else { // reset when motor is off
+        water_sensor.resetModifier();
+      }
+
+      water_sensor.update();
+
+      // still works as expected with interference
+      if(water_sensor.onActiveLevelChange()) {
+        ...
+      }
+    }
+
+##update()
+Keep processing the readings and move this library along in real-time.
+
+    void loop() {
+      water_sensor.update();
+    }
+
+##getValue()
+Returns the capacitance sensor reading after being adjusted with the value given to [setModifier()](#setmodifiervalue).
+
+This will return [getRawValue()](#getrawvalue) if you have not used [setModifier()](#setmodifiervalue) yet, or if you have called [resetModifier()](#resetmodifier).
+
+    void loop() {
+      water_sensor.update();
+
+      if(water_sensor.onValueChange()) {
+        Serial.println(water_sensor.getValue());
+      }
+    }
+
+##getRawValue()
+Returns the raw capacitance sensor reading and ignores any value that has been passed to [setModifier()](#setmodifiervalue).
+
+    void loop() {
+      water_sensor.update();
+
+      if(water_sensor.onRawValueChange()) {
+        Serial.println(water_sensor.getRawValue());
+      }
+    }
 
 ##getActiveLevel()
 Returns the current water level.
@@ -131,11 +202,67 @@ Returns the current water level.
 * 2 means the water is touching the second level
 * n means the water is touching the nth level
 * sizeof(n) + 1 means the water is above the max level
-* -1 if an error was found in the input levels (non-contiguous range)
+* -1 if the value was not found
 
 Example:
 
-    water_sensor.getActiveLevel()
+    void loop() {
+      water_sensor.update();
+
+      if(water_sensor.onActiveLevelChange()) {
+        Serial.println(water_sensor.getActiveLevel());
+      }
+    }
+
+##isActiveLevel(value)
+Provide an integer and this will return true if it's equal to the current [getActiveLevel()](#getactivelevel).
+
+    void loop() {
+      water_sensor.update();
+
+      if(water_sensor.onActiveLevelChange()) {
+        if(water_sensor.isActiveLevel(1)) {
+          Serial.println("First level active");
+        }
+      }
+    }
+
+##onValueChange()
+This method will return true once the sensor [getValue()](#getvalue) changes. It will then return false until the reading changes to a different value again.
+
+    void loop() {
+      water_sensor.update();
+
+      if(water_sensor.onValueChange()) {
+        // code only runs once per event
+        Serial.println(water_sensor.getValue());
+      }
+    }
+
+##onRawValueChange()
+This method will return true once the sensor [getRawValue()](#getrawvalue) changes. It will then return false until the reading changes to a different value again.
+
+    void loop() {
+      water_sensor.update();
+
+      if(water_sensor.onRawValueChange()) {
+        // code only runs once per event
+        Serial.println(water_sensor.getRawValue());
+      }
+    }
+
+
+##onActiveLevelChange()
+This method will return true once the sensor [getActiveLevel()](#getactivelevel) changes. It will then return false until the level changes to a different value again.
+
+    void loop() {
+      water_sensor.update();
+
+      if(water_sensor.onActiveLevelChange()) {
+        // code only runs once per event
+        Serial.println(water_sensor.getActiveLevel());
+      }
+    }
 
 #License
 This code is available under the [MIT License](http://opensource.org/licenses/mit-license.php).
