@@ -3,62 +3,36 @@
 // MIT License
 
 #include <Arduino.h>
-#include <RBD_WaterSensor.h>
 #include <RBD_Capacitance.h>
 #include <RBD_Threshold.h>
-#include <RBD_Timer.h>
+#include <RBD_WaterSensor.h>
 
 namespace RBD {
+
   WaterSensor::WaterSensor(int send_pin, int receive_pin, int level_count)
-  : _cap_sensor(send_pin, receive_pin), _threshold(level_count), _refresh_timer() {
+  : _cap_sensor(send_pin, receive_pin), _threshold(level_count){
     _level_count = level_count;
-  }
-
-  void WaterSensor::setAccuracy(int value) {
-    _cap_sensor.setSampleSize(value);
-  }
-
-  void WaterSensor::setRefreshRate(int hertz) {
-    _refresh_hertz = hertz;
-    _real_time     = false;
-
-    if(_shouldBeRunning()) {
-      _refresh_timer.setHertz(_refresh_hertz);
-      _cap_sensor.start();
-    }
-  }
-
-  void WaterSensor::startRealTime() {
-    _real_time = true;
     _cap_sensor.start();
   }
 
   void WaterSensor::update() {
-    if(_shouldBeRunning()) {
-      _cap_sensor.update();
+    _cap_sensor.update();
 
-      if(_isRealTime()) {
-        // go full speed
-        if(_cap_sensor.isFinished()) {
-          _raw_value = _cap_sensor.getValue();
-          _cap_sensor.start();
-        }
+    if(_cap_sensor.isFinished()) {
+      _raw_value = _cap_sensor.getValue();
+
+      // set the flag if the value has changed
+      if(_prev_raw_value1 != _raw_value) {
+        _prev_raw_value1 = _raw_value;
+        _raw_value_changed = true;
       }
-      else {
-        // limit the number of times / second
-        if(_refresh_timer.isExpired()) {
-          if(_cap_sensor.isFinished()) {
-            _raw_value = _cap_sensor.getValue();
-            _cap_sensor.start();
-            _refresh_timer.restart();
-          }
-        }
-      }
+
+      _cap_sensor.start();
     }
   }
 
-  int WaterSensor::getRawValue() {
-    return _raw_value;
+  void WaterSensor::setAccuracy(int value) {
+    _cap_sensor.setSampleSize(value);
   }
 
   void WaterSensor::setLevel(int index, int raw_value) {
@@ -69,18 +43,45 @@ namespace RBD {
     _threshold.setMaxLevel(raw_value);
   }
 
+  int WaterSensor::getRawValue() {
+    return _raw_value;
+  }
+
   int WaterSensor::getActiveLevel() {
-    return _threshold.computeLevel(getRawValue());
+    // freeze the raw value for comparison
+    _temp_raw_value = getRawValue();
+
+    // memozie the threshold for performance reasons
+    if(_prev_raw_value2 != _temp_raw_value) {
+      _prev_raw_value2 = _temp_raw_value;
+      _saved_level = _threshold.computeLevel(_temp_raw_value);
+    }
+
+    // return the current level
+    return _saved_level;
   }
 
-
-  // private
-
-  bool WaterSensor::_shouldBeRunning() {
-    return _isRealTime() || _refresh_hertz != 0;
+  bool WaterSensor::isActiveLevel(int value) {
+    return getActiveLevel() == value;
   }
 
-  bool WaterSensor::_isRealTime() {
-    return _real_time;
+  bool WaterSensor::onRawValueChange() {
+    if(_raw_value_changed) {
+      _raw_value_changed = false;
+      return true;
+    }
+    return false;
+  }
+
+  bool WaterSensor::onActiveLevelChange() {
+    // freeze the level for comparison
+    _temp_level = getActiveLevel();
+
+    // compare it
+    if(_prev_level != _temp_level) {
+      _prev_level = _temp_level;
+      return true;
+    }
+    return false;
   }
 }

@@ -6,33 +6,34 @@
 #define RBD_WATER_SENSOR
 
 #include <Arduino.h>
-#include <RBD_WaterSensor.h>
 #include <RBD_Capacitance.h>
 #include <RBD_Threshold.h>
-#include <RBD_Timer.h>
 
 namespace RBD {
   class WaterSensor {
     public:
       WaterSensor(int send_pin, int receive_pin, int level_count);
-      void setAccuracy(int value);             // set the moving average number of readings
-      void setRefreshRate(int hertz);          // set the number of times to update each second
-      void startRealTime();                    // refresh the sensor with no limit
-      void update();                           // keep things moving in real-time
-      int getRawValue();                       // get the raw capacitance value
-      void setLevel(int index, int raw_value); // assign the raw capacitance value to a level
-      void setMaxLevel(int raw_value);         // set the raw capacitance upper bounds for the last level
-      int getActiveLevel();                    // return the current level of water based upon the calibration
+      void update();
+      void setAccuracy(int value);
+      void setLevel(int index, int raw_value);
+      void setMaxLevel(int raw_value);
+      int getRawValue();
+      int getActiveLevel();
+      bool isActiveLevel(int value);
+      bool onRawValueChange();
+      bool onActiveLevelChange();
     private:
-      int _level_count;         // total number of water levels for the sensor
-      int _refresh_hertz;       // max number of readings / second
-      bool _real_time;          // sensor collects at max speed
-      int _raw_value;           // holds the raw capacitance value
-      bool _isRealTime();       // if this is reading at max speed
-      bool _shouldBeRunning();  // if the refresh rate is above zero or in real-time
-      Capacitance _cap_sensor;  // capacitance library helper object
-      Threshold _threshold;     // threshold library helper object
-      Timer _refresh_timer;     // timer library helper object
+      int _level_count;
+      int _raw_value;
+      int _temp_raw_value;
+      int _prev_raw_value1;
+      int _prev_raw_value2;
+      int _saved_level;
+      int _prev_level;
+      int _temp_level;
+      bool _raw_value_changed = false;
+      Capacitance _cap_sensor;
+      Threshold _threshold;
   };
 }
 #endif
