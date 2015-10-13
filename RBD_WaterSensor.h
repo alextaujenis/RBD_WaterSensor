@@ -14,7 +14,7 @@ namespace RBD {
     public:
       WaterSensor(int send_pin, int receive_pin, int level_count);
       void update();
-      void setAccuracy(int value);
+      void setSampleSize(int value); // default 1000
       void setLevel(int index, int raw_value);
       void setMaxLevel(int raw_value);
       void setModifier(int value);

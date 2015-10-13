@@ -12,6 +12,7 @@ namespace RBD {
   WaterSensor::WaterSensor(int send_pin, int receive_pin, int level_count)
   : _cap_sensor(send_pin, receive_pin), _threshold(level_count){
     _level_count = level_count;
+    setSampleSize(1000); // default 1000
     _cap_sensor.start();
   }
 
@@ -31,7 +32,7 @@ namespace RBD {
     }
   }
 
-  void WaterSensor::setAccuracy(int value) {
+  void WaterSensor::setSampleSize(int value) {
     _cap_sensor.setSampleSize(value);
   }
 

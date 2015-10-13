@@ -2,15 +2,14 @@
 // Copyright 2015 Alex Taujenis
 // MIT License
 
-#include <RBD_WaterSensor.h>
 #include <RBD_Capacitance.h>
 #include <RBD_Threshold.h>
+#include <RBD_WaterSensor.h>
 
 RBD::WaterSensor water_sensor(1, 0, 3); // send, receive, level count
 
 void setup() {
   Serial.begin(115200);
-  water_sensor.setAccuracy(1000); // avg 1000 samples
   water_sensor.setLevel(1, 120);
   water_sensor.setLevel(2, 154);
   water_sensor.setLevel(3, 187);
