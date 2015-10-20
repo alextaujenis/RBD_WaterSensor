@@ -1,4 +1,4 @@
-// Arduino Water Sensor Library v1.0.1 - Measure and calibrate capacitance water sensors.
+// Arduino Water Sensor Library v1.0.2 - Measure and calibrate capacitance water sensors.
 // https://github.com/alextaujenis/RBD_WaterSensor
 // Copyright 2015 Alex Taujenis
 // MIT License

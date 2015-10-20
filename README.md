@@ -1,5 +1,5 @@
-#Arduino Water Sensor Library v1.0.1
-Measure and calibrate capacitance water sensors.
+#Arduino Water Sensor Library v1.0.2
+Measure and calibrate water level sensors.
 
 * [Documentation](https://alextaujenis.github.io/RobotsBigData/compiled/docs-arduino-water-sensor.html)
 * [Project Website](https://alextaujenis.github.io/RobotsBigData/)
