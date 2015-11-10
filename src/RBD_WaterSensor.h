@@ -1,4 +1,4 @@
-// Arduino Water Sensor Library v1.0.3 - Measure and calibrate capacitance water sensors.
+// Arduino Water Sensor Library v2.0.0 - Measure and calibrate capacitance water sensors.
 // https://github.com/alextaujenis/RBD_WaterSensor
 // Copyright 2015 Alex Taujenis
 // MIT License
@@ -23,7 +23,6 @@ namespace RBD {
       int getValue();
       int getRawValue();
       int getActiveLevel();
-      bool isActiveLevel(int value);
       bool onValueChange();
       bool onRawValueChange();
       bool onActiveLevelChange();

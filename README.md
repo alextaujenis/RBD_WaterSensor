@@ -1,4 +1,4 @@
-#Arduino Water Sensor Library v1.0.3
+#Arduino Water Sensor Library v2.0.0
 Measure and calibrate water level sensors.
 
 * [Documentation](http://robotsbigdata.com/docs-arduino-water-sensor.html)

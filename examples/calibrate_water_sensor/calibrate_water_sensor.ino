@@ -1,4 +1,4 @@
-// Arduino Water Sensor Library v1.0.3 Example - Calibrate a three-level water sensor.
+// Arduino Water Sensor Library v2.0.0 Example - Calibrate a three-level water sensor.
 // https://github.com/alextaujenis/RBD_WaterSensor
 // Copyright 2015 Alex Taujenis
 // MIT License
@@ -7,7 +7,7 @@
 #include <RBD_Threshold.h>   // https://github.com/alextaujenis/RBD_Threshold
 #include <RBD_WaterSensor.h> // https://github.com/alextaujenis/RBD_WaterSensor
 
-RBD::WaterSensor water_sensor(1, 0, 3); // send, receive, level count
+RBD::WaterSensor water_sensor(2, 3, 3); // send, receive pin, levels
 
 void setup() {
   Serial.begin(115200);
