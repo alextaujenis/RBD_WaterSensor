@@ -2,9 +2,8 @@
 Measure and calibrate water level sensors.
 
 * [Documentation](http://robotsbigdata.com/docs-arduino-water-sensor.html)
-* [Download Library](https://github.com/alextaujenis/RBD_WaterSensor/raw/master/extras/RBD_WaterSensor.zip)
 * [Project Website](http://robotsbigdata.com)
-* [Report an Issue](https://github.com/alextaujenis/RBD_WaterSensor/issues/new)*
+* [Comments, Questions, or Issues](https://github.com/alextaujenis/RBD_WaterSensor/issues/new)*
 
 \**Please include your Arduino make/model and IDE version when reporting an issue with this library.*
 
